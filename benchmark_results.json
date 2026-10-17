@@ -2,83 +2,81 @@
   "metrics": {
     "binary_accuracy": {
       "denominator": 291,
-      "numerator": 267,
-      "value": 0.917526
+      "numerator": 269,
+      "value": 0.924399
     },
     "candidate_confusion_matrix": {
       "fn": 6,
-      "fp": 18,
-      "tn": 238,
-      "tp": 29
+      "fp": 16,
+      "tn": 239,
+      "tp": 30
     },
     "candidate_positive_definition": [
       "Include",
       "Unsure"
     ],
     "exclusion_code_accuracy_on_human_excludes": {
-      "denominator": 256,
-      "numerator": 156,
-      "value": 0.609375
+      "denominator": 255,
+      "numerator": 155,
+      "value": 0.607843
     },
     "false_negative_rate": {
-      "denominator": 35,
+      "denominator": 36,
       "numerator": 6,
-      "value": 0.171429
+      "value": 0.166667
     },
     "false_negative_record_ids": [
       7,
       20,
       31,
       57,
-      145,
-      229
+      229,
+      274
     ],
     "false_positive_record_ids": [
       3,
       75,
       112,
       115,
-      116,
-      127,
       185,
-      192,
-      194,
       197,
       198,
       199,
       213,
       216,
+      234,
+      243,
+      249,
       264,
-      268,
       278,
       283
     ],
     "human_class_counts": {
-      "Exclude": 256,
+      "Exclude": 255,
       "Include": 14,
-      "Unsure": 21
+      "Unsure": 22
     },
     "llm_class_counts": {
-      "Exclude": 244,
-      "Include": 13,
-      "Unsure": 34
+      "Exclude": 245,
+      "Include": 16,
+      "Unsure": 30
     },
     "precision": {
-      "denominator": 47,
-      "numerator": 29,
-      "value": 0.617021
+      "denominator": 46,
+      "numerator": 30,
+      "value": 0.652174
     },
     "recall_sensitivity": {
-      "denominator": 35,
-      "numerator": 29,
-      "value": 0.828571
+      "denominator": 36,
+      "numerator": 30,
+      "value": 0.833333
     },
     "recall_target": 0.95,
     "recall_target_met": false,
     "specificity": {
-      "denominator": 256,
-      "numerator": 238,
-      "value": 0.929688
+      "denominator": 255,
+      "numerator": 239,
+      "value": 0.937255
     },
     "three_class_decision_accuracy": {
       "denominator": 291,
@@ -87,8 +85,8 @@
     }
   },
   "run": {
-    "completed_at_utc": "2026-10-17T13:19:06.853438Z",
-    "current_invocation_seconds": 584.234699,
+    "completed_at_utc": "2026-10-17T15:43:34.595885Z",
+    "current_invocation_seconds": 596.081012,
     "dependencies": {
       "openai": "2.48.0",
       "pandas": "2.3.3",
@@ -96,16 +94,16 @@
     },
     "inputs": {
       "ground_truth_sample_291.csv": "f7737b709851b4bcadc43f6ab3e18283c51d1eecb7957ebc9ce330ae47ed9425",
-      "ground_truth_screened_291.csv": "73f94eb3006a74ace62c4226614e573c188181a78266b8267fe24df3a5914423"
+      "ground_truth_screened_291.csv": "6a109cee993a8dab9773ddb684ac748cfb306118dd62dc906b23a2894a2c17a0"
     },
     "model_requested": "gpt-6-luna",
     "models_returned": [
       "gpt-6-luna"
     ],
     "new_records": 291,
-    "prompt": "You are an expert methodological assistant conducting Phase 1 title-and-abstract screening for a PRISMA-ScR compliant scoping review titled \"Understanding Abandonment in Open Source Software (OSS).\"\n\nReview objective:\nMap literature on OSS abandonment to identify operational definitions, underlying causes, study methodologies, and ecosystem impacts.\n\nPopulation-Concept-Context inclusion criteria:\n- Population: Open Source Software (OSS/FLOSS) projects, repositories, or ecosystems.\n- Concept: abandonment and synonymous concepts including dormancy, project failure, software decay, inactivity, decline, or unmaintained states.\n- Context: software engineering practices, developer activity patterns, software supply-chain impact, project health, and ecosystem sustainability or maintenance dynamics.\n- Study type: original empirical research in a peer-reviewed venue.\n\nConcept meaning:\n- Scope clarification: the concept includes not only abandonment states, but also explicitly connected causes, predictors, prevention or mitigation mechanisms, resilience factors, and consequences. Treat this clarification as part of the definition used by EXC-2 below.\n- Community structure or participation, maintainer support, funding or resources, contributor retention, and long-term support can be relevant when the study analyzes how they help OSS projects continue to be maintained or survive, or how their absence contributes to inactivity or discontinuation. A study can therefore be in scope even when it focuses on avoiding abandonment rather than observing an already-abandoned project.\n- Sustainability, project or community health, stability, long-term success, continued development, maintenance capacity, and similar terms can have meanings broader than abandonment. Do not automatically Include a study because one of these terms appears. If one is central to the study's objective, data, analysis, or findings but its relationship to OSS project/repository continuity is unclear, assign Unsure.\n- Adjacent factors can be relevant, but do not treat them as lifecycle evidence merely because they could theoretically affect a project. For a study of governance, participation, onboarding, collaboration, code quality, bug handling, developer retention, maintainer workload, funding, or similar factors, assign Unsure only when the title/abstract itself provides a textual bridge to OSS project/repository sustainability, health, continuity, survival, continued maintenance, inactivity, or discontinuation. If the study's actual objective, data, analysis, and findings concern the adjacent topic without such a bridge, assign EXC-2.\n- Do not use a sustainability or project-success statement that appears only in general background or motivation as evidence for Include or Unsure. Check whether the study actually investigates that concept or a linked factor through its objectives, data, analysis, or findings.\n- Outdated OSS, stale dependencies, delayed updates, or associated risks are not automatically evidence of abandonment. Include them only when the study clearly examines their connection to OSS projects or repositories becoming unsupported, unmaintained, inactive, or discontinued. When this connection is plausible but unclear, assign Unsure; do not require an explicit causal link for Unsure. Assign EXC-2 only when the study clearly concerns ordinary update or dependency practices with no plausible lifecycle connection.\n- Distinguish the level of the outcome. Survival, death, churn, or removal of code, components, tables, contributors, or subsystems does not by itself establish project- or repository-level abandonment. If the abstract studies such a lower-level outcome and leaves its relationship to project/repository continuity unclear, assign Unsure.\n- Abandonment may be described without using the word “abandonment.” It can include project- or repository-level states and processes such as dormancy, sustained inactivity, maintenance cessation, decay, decline, project death, or reduced likelihood of survival.\n- Contributor or maintainer activity, interactions, retention, resources, and effort are not automatically synonymous with abandonment. Treat them as potentially relevant factors, indicators, or consequences when the study’s aims, research questions, analysis, or findings explicitly connect them to OSS project or repository persistence, continued maintenance, inactivity, discontinuation, decline, or survival.\n- Assess the study’s purpose, research questions, data, analysis, and outcomes rather than matching isolated terms. Include a record when its research directly examines an abandonment-related state or an explicitly connected factor. If the connection is plausible but unclear from the abstract, assign Unsure. A passing mention in background or motivation alone does not establish relevance.\n- Assign EXC-2 only when the title and abstract make it clear that the study’s actual subject is outside these abandonment-related concepts. Do not use the absence of a specific keyword as evidence for exclusion.\n- Distinguish project-level inactivity or maintenance cessation from an individual contributor’s inactivity; one does not establish the other without an explicit connection.\n\nStudy meaning:\n- A primary empirical replication or replication study remains a primary study, even when it reproduces or extends earlier findings using the same dataset. Reserve EXC-5 for literature syntheses such as systematic or scoping reviews, mapping studies, and meta-analyses.\n- An empirical analysis of conference talks, practitioner discussions, or other primary data is not a secondary study merely because the data are talks or publications. Reserve EXC-5 for a synthesis of existing studies; if the record does not establish whether it is primary or secondary, assign Unsure rather than inferring EXC-5.\n- Do not infer EXC-4 solely from “work-in-progress,” a conference venue, or a missing DOI. Distinguish an individual research paper from a proceedings volume, table of contents, program, or index; do not use a relevant paper listed inside a collection as evidence about the collection-level record.\n\nApply the following exclusions strictly from top to bottom. Stop at and assign the FIRST criterion for which the supplied title, abstract, or secondary metadata provides explicit evidence; never replace an earlier matching code with a later, more specific code:\n- EXC-1: Non-OSS Context — the study population is explicitly outside OSS/FLOSS projects, repositories, or ecosystems. This includes proprietary or closed-source software and clearly non-software populations.\n- EXC-2: Out of Scope Concept — assign only when the study's actual objective and evidence are clearly unrelated to OSS project/repository continuity and do not examine an abandonment-related state or a plausible lifecycle factor, indicator, prevention mechanism, or consequence. General maintenance, evolution, quality, or updating clearly unrelated to those concepts is out of scope. An unclear or unproven connection is not, by itself, evidence for EXC-2; use Unsure when the study's focus makes the connection plausible.\n- EXC-3: Non-SE Context — only after EXC-1 and EXC-2 do not apply, the study concerns a non-software-engineering domain such as open hardware, networking, open science, or open datasets.\n- EXC-4: Grey / Non Peer Reviewed — the item is explicitly non-peer-reviewed or short-form material such as a preprint, keynote, editorial, or slides.\n- EXC-5: Secondary Study — the item is secondary or tertiary literature such as a systematic literature review or mapping study rather than a primary study.\n\nHigh-recall rules:\n- If the abstract is ambiguous, incomplete, absent, or lacks explicit evidence for exclusion, assign decision Unsure rather than Exclude.\n- Use this three-way threshold: Include when the study clearly examines a project/repository lifecycle outcome or clearly analyzes a factor's relationship to that outcome; Unsure when the study contains a textual lifecycle anchor or bridge but the title/abstract leaves its meaning, relationship, or level of analysis unresolved; EXC-2 when the actual study focus is clearly unrelated and no such anchor or bridge is present. Do not infer a lifecycle relationship solely because a factor might theoretically affect project continuity.\n- Do not require explicit causal proof to assign Unsure once a textual lifecycle anchor or bridge is present. If that anchor's meaning or relationship is unresolved, assign Unsure; do not infer a bridge solely because a factor might theoretically matter.\n- A broad sustainability, success, health, stability, or long-term-support reference is not sufficient for Include on its own. Check whether the study investigates the concept; if it does but its project-continuity meaning is unclear, assign Unsure.\n- Absence of an OSS/open-source keyword alone is not proof that the population is outside OSS; without affirmative evidence, use Unsure rather than EXC-1.\n- Explicit evidence that the population is outside OSS must be classified as EXC-1, even when a later criterion such as EXC-3 could also describe the record.\n- Do not infer non-peer-reviewed status solely from an unfamiliar venue or missing DOI.\n- EXC-6 (Non-English) and EXC-7 (Unretrievable) are disabled in Phase 1 and must never be assigned; they require full-text assessment.\n- Do not use outside knowledge. Judge only the supplied record.\n\nOutput rules:\n- Include: the record appears to satisfy the criteria; exclusion code must be null and notes must be empty.\n- Exclude: explicit evidence supports a listed EXC-1 to EXC-5 code; provide the first code and a one-line rationale.\n- Unsure: evidence is ambiguous or insufficient; exclusion code must be null and provide a one-line rationale.\n",
-    "prompt_sha256": "64ba7b73da0a374e3f3efa5d8d77f7d78ac3b76cc8de6d24cfbc02b18f28a926",
-    "prompt_version": "title-abstract-screening-v1.1.1",
+    "prompt": "You are an expert methodological assistant conducting Phase 1 title-and-abstract screening for a PRISMA-ScR compliant scoping review titled \"Understanding Abandonment in Open Source Software (OSS).\"\n\nReview objective:\nMap literature on OSS abandonment to identify operational definitions, underlying causes, study methodologies, and ecosystem impacts.\n\nPopulation-Concept-Context inclusion criteria:\n- Population: Open Source Software (OSS/FLOSS) projects, repositories, or ecosystems.\n- Concept: abandonment and synonymous concepts including dormancy, project failure, software decay, inactivity, decline, or unmaintained states.\n- Context: software engineering practices, developer activity patterns, software supply-chain impact, project health, and ecosystem sustainability or maintenance dynamics.\n- Study type: original empirical research in a peer-reviewed venue.\n\nConcept meaning:\n- Scope clarification: the concept includes not only abandonment states, but also explicitly connected causes, predictors, prevention or mitigation mechanisms, resilience factors, and consequences. Treat this clarification as part of the definition used by EXC-2 below.\n- Community structure or participation, maintainer support, funding or resources, contributor retention, and long-term support can be relevant when the study analyzes how they help OSS projects continue to be maintained or survive, or how their absence contributes to inactivity or discontinuation. A study can therefore be in scope even when it focuses on avoiding abandonment rather than observing an already-abandoned project.\n- Sustainability, project or community health, stability, long-term success, continued development, maintenance capacity, and similar terms can have meanings broader than abandonment. Do not automatically Include a study because one of these terms appears. If one is central to the study's objective, data, analysis, or findings but its relationship to OSS project/repository continuity is unclear, assign Unsure.\n- Adjacent factors can be relevant, but do not treat them as lifecycle evidence merely because they could theoretically affect a project. For a study of governance, participation, onboarding, collaboration, code quality, bug handling, developer retention, maintainer workload, funding, or similar factors, assign Unsure only when the title/abstract itself provides a textual bridge to OSS project/repository sustainability, health, continuity, survival, continued maintenance, inactivity, or discontinuation. If the study's actual objective, data, analysis, and findings concern the adjacent topic without such a bridge, assign EXC-2.\n- Do not use a sustainability or project-success statement that appears only in general background or motivation as evidence for Include or Unsure. Check whether the study actually investigates that concept or a linked factor through its objectives, data, analysis, or findings.\n- Outdated OSS, stale dependencies, delayed updates, or associated risks are not automatically evidence of abandonment. Include them only when the study clearly examines their connection to OSS projects or repositories becoming unsupported, unmaintained, inactive, or discontinued. When this connection is plausible but unclear, assign Unsure; do not require an explicit causal link for Unsure. Assign EXC-2 only when the study clearly concerns ordinary update or dependency practices with no plausible lifecycle connection.\n- Distinguish the level of the outcome. Survival, death, churn, or removal of code, components, tables, contributors, or subsystems does not by itself establish project- or repository-level abandonment. If the abstract studies such a lower-level outcome and leaves its relationship to project/repository continuity unclear, assign Unsure.\n- Abandonment may be described without using the word “abandonment.” It can include project- or repository-level states and processes such as dormancy, sustained inactivity, maintenance cessation, decay, decline, project death, or reduced likelihood of survival.\n- Contributor or maintainer activity, interactions, retention, resources, and effort are not automatically synonymous with abandonment. Treat them as potentially relevant factors, indicators, or consequences when the study’s aims, research questions, analysis, or findings explicitly connect them to OSS project or repository persistence, continued maintenance, inactivity, discontinuation, decline, or survival.\n- Assess the study’s purpose, research questions, data, analysis, and outcomes rather than matching isolated terms. Include a record when its research directly examines an abandonment-related state or an explicitly connected factor. If the connection is plausible but unclear from the abstract, assign Unsure. A passing mention in background or motivation alone does not establish relevance.\n- Assign EXC-2 only when the title and abstract make it clear that the study’s actual subject is outside these abandonment-related concepts. Do not use the absence of a specific keyword as evidence for exclusion.\n- Distinguish project-level inactivity or maintenance cessation from an individual contributor’s inactivity; one does not establish the other without an explicit connection.\n\nStudy meaning:\n- A primary empirical replication or replication study remains a primary study, even when it reproduces or extends earlier findings using the same dataset. Reserve EXC-5 for literature syntheses such as systematic or scoping reviews, mapping studies, and meta-analyses.\n- An empirical analysis of conference talks, practitioner discussions, or other primary data is not a secondary study merely because the data are talks or publications. Reserve EXC-5 for a synthesis of existing studies; if the record does not establish whether it is primary or secondary, assign Unsure rather than inferring EXC-5.\n- Assign EXC-4 when the title or abstract identifies the record itself as an editorial, introduction to a journal or special issue, preface, foreword, or welcome article rather than an individual primary research study. Do not exclude an empirical research article merely because it appears in a special issue.\n- Do not infer EXC-4 solely from “work-in-progress,” a conference venue, or a missing DOI. Assign EXC-4 when the supplied title and/or Item Type clearly identifies the record itself as a proceedings collection/landing page, table of contents, program, or index rather than an individual research paper. Do not use a relevant paper listed inside a collection as evidence about the collection-level record. A conference venue or a web-accessed individual paper alone is not sufficient for EXC-4.\n\nApply the following exclusions strictly from top to bottom. Stop at and assign the FIRST criterion for which the supplied title, abstract, or secondary metadata provides explicit evidence; never replace an earlier matching code with a later, more specific code:\n- EXC-1: Non-OSS Context — the study population is explicitly outside OSS/FLOSS projects, repositories, or ecosystems. This includes proprietary or closed-source software and clearly non-software populations.\n- EXC-2: Out of Scope Concept — assign only when the study's actual objective and evidence are clearly unrelated to OSS project/repository continuity and do not examine an abandonment-related state or a plausible lifecycle factor, indicator, prevention mechanism, or consequence. General maintenance, evolution, quality, or updating clearly unrelated to those concepts is out of scope. An unclear or unproven connection is not, by itself, evidence for EXC-2; use Unsure when the study's focus makes the connection plausible.\n- EXC-3: Non-SE Context — only after EXC-1 and EXC-2 do not apply, the study concerns a non-software-engineering domain such as open hardware, networking, open science, or open datasets.\n- EXC-4: Grey / Non Peer Reviewed — the item is explicitly non-peer-reviewed or short-form material such as a preprint, keynote, editorial, or slides.\n- EXC-5: Secondary Study — the item is secondary or tertiary literature such as a systematic literature review or mapping study rather than a primary study.\n\nHigh-recall rules:\n- If the abstract is ambiguous, incomplete, absent, or lacks explicit evidence for exclusion, assign decision Unsure rather than Exclude.\n- Use this three-way threshold: Include when the study clearly examines a project/repository lifecycle outcome or clearly analyzes a factor's relationship to that outcome; Unsure when the study contains a textual lifecycle anchor or bridge but the title/abstract leaves its meaning, relationship, or level of analysis unresolved; EXC-2 when the actual study focus is clearly unrelated and no such anchor or bridge is present. Do not infer a lifecycle relationship solely because a factor might theoretically affect project continuity.\n- Do not require explicit causal proof to assign Unsure once a textual lifecycle anchor or bridge is present. If that anchor's meaning or relationship is unresolved, assign Unsure; do not infer a bridge solely because a factor might theoretically matter.\n- A broad sustainability, success, health, stability, or long-term-support reference is not sufficient for Include on its own. Check whether the study investigates the concept; if it does but its project-continuity meaning is unclear, assign Unsure.\n- Absence of an OSS/open-source keyword alone is not proof that the population is outside OSS; without affirmative evidence, use Unsure rather than EXC-1.\n- Explicit evidence that the population is outside OSS must be classified as EXC-1, even when a later criterion such as EXC-3 could also describe the record.\n- Do not infer non-peer-reviewed status solely from an unfamiliar venue or missing DOI.\n- EXC-6 (Non-English) and EXC-7 (Unretrievable) are disabled in Phase 1 and must never be assigned; they require full-text assessment.\n- Do not use outside knowledge. Judge only the supplied record.\n\nOutput rules:\n- Include: the record appears to satisfy the criteria; exclusion code must be null and notes must be empty.\n- Exclude: explicit evidence supports a listed EXC-1 to EXC-5 code; provide the first code and a one-line rationale.\n- Unsure: evidence is ambiguous or insufficient; exclusion code must be null and provide a one-line rationale.\n",
+    "prompt_sha256": "f58416fdf9763ce1338d7a04b241fd91d21d2e68e2feaa5c2a82915cbfdc2b38",
+    "prompt_version": "title-abstract-screening-v1.1.2",
     "protocol": {
       "filename": "OSF Protocol Draft - raw.pdf",
       "sha256": "7573b2459fc790bf713f045c30354df264562f2cedc4599847d037c6db66814a"
@@ -113,16 +111,16 @@
     "reasoning_effort": "none",
     "records": 291,
     "resumed_records": 0,
-    "signature": "4806ece4154a16c2003d7a5445e79f361781d6b45a47c8379e4363eba4e0dc8e",
-    "started_at_utc": "2026-10-17T13:09:22.686157Z",
+    "signature": "e6503c97613e5ba27cdf597a0dbdbda140656e2c35b52d0aff6f3de463797f72",
+    "started_at_utc": "2026-10-17T15:33:38.572411Z",
     "store": false,
     "temperature": 0.0,
     "token_usage": {
-      "input_tokens": 713201,
-      "output_tokens": 18038,
-      "total_tokens": 731239
+      "input_tokens": 742301,
+      "output_tokens": 18004,
+      "total_tokens": 760305
     },
-    "total_api_latency_seconds": 581.871078
+    "total_api_latency_seconds": 593.185537
   },
   "schema_version": "benchmark-results-v1.0.0"
 }

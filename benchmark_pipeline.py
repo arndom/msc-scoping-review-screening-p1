@@ -50,7 +50,7 @@ TEMPERATURE = 0.0
 RECALL_TARGET = 0.95
 MAX_ATTEMPTS = 4  # One initial request plus three retries.
 BACKOFF_SECONDS = (1.0, 2.0, 4.0)
-PROMPT_VERSION = "title-abstract-screening-v1.1.1"
+PROMPT_VERSION = "title-abstract-screening-v1.1.2"
 RESULTS_SCHEMA_VERSION = "benchmark-results-v1.0.0"
 
 
@@ -140,7 +140,8 @@ Concept meaning:
 Study meaning:
 - A primary empirical replication or replication study remains a primary study, even when it reproduces or extends earlier findings using the same dataset. Reserve EXC-5 for literature syntheses such as systematic or scoping reviews, mapping studies, and meta-analyses.
 - An empirical analysis of conference talks, practitioner discussions, or other primary data is not a secondary study merely because the data are talks or publications. Reserve EXC-5 for a synthesis of existing studies; if the record does not establish whether it is primary or secondary, assign Unsure rather than inferring EXC-5.
-- Do not infer EXC-4 solely from “work-in-progress,” a conference venue, or a missing DOI. Distinguish an individual research paper from a proceedings volume, table of contents, program, or index; do not use a relevant paper listed inside a collection as evidence about the collection-level record.
+- Assign EXC-4 when the title or abstract identifies the record itself as an editorial, introduction to a journal or special issue, preface, foreword, or welcome article rather than an individual primary research study. Do not exclude an empirical research article merely because it appears in a special issue.
+- Do not infer EXC-4 solely from “work-in-progress,” a conference venue, or a missing DOI. Assign EXC-4 when the supplied title and/or Item Type clearly identifies the record itself as a proceedings collection/landing page, table of contents, program, or index rather than an individual research paper. Do not use a relevant paper listed inside a collection as evidence about the collection-level record. A conference venue or a web-accessed individual paper alone is not sufficient for EXC-4.
 
 Apply the following exclusions strictly from top to bottom. Stop at and assign the FIRST criterion for which the supplied title, abstract, or secondary metadata provides explicit evidence; never replace an earlier matching code with a later, more specific code:
 - EXC-1: Non-OSS Context — the study population is explicitly outside OSS/FLOSS projects, repositories, or ecosystems. This includes proprietary or closed-source software and clearly non-software populations.
