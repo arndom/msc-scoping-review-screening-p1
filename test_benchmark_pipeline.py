@@ -182,6 +182,7 @@ class ApiTests(unittest.TestCase):
         self.assertEqual(classified["usage"]["total_tokens"], 15)
         kwargs = client.responses.calls[0]
         self.assertEqual(kwargs["temperature"], 0.0)
+        self.assertEqual(kwargs["reasoning"], {"effort": "none"})
         self.assertFalse(kwargs["store"])
         self.assertIs(kwargs["text_format"], pipeline.ScreeningResult)
         record_payload = kwargs["input"][0]["content"]
@@ -190,6 +191,28 @@ class ApiTests(unittest.TestCase):
         self.assertNotIn('"Decision"', record_payload)
         self.assertNotIn('"Exclusion Code"', record_payload)
         self.assertNotIn('"Notes"', record_payload)
+
+    def test_low_reasoning_omits_temperature(self):
+        result = pipeline.ScreeningResult(
+            llm_decision="Include", llm_exclusion_code=None, llm_notes=""
+        )
+        client = FakeClient([fake_response(result)])
+
+        pipeline.classify_record(
+            client, "test-model", self.record, reasoning_effort="low"
+        )
+
+        kwargs = client.responses.calls[0]
+        self.assertEqual(kwargs["reasoning"], {"effort": "low"})
+        self.assertNotIn("temperature", kwargs)
+
+    def test_unsupported_reasoning_effort_is_rejected(self):
+        client = FakeClient([])
+        with self.assertRaisesRegex(pipeline.PipelineError, "Unsupported"):
+            pipeline.classify_record(
+                client, "test-model", self.record, reasoning_effort="medium"
+            )
+        self.assertEqual(client.responses.calls, [])
 
     def test_transient_failure_is_retried(self):
         result = pipeline.ScreeningResult(
@@ -223,11 +246,16 @@ class ApiTests(unittest.TestCase):
 
 
 class CheckpointTests(unittest.TestCase):
+    def test_reasoning_effort_changes_signature(self):
+        none_signature = pipeline.run_signature("sample", "protocol", "model", "none")
+        low_signature = pipeline.run_signature("sample", "protocol", "model", "low")
+        self.assertNotEqual(none_signature, low_signature)
+
     def test_checkpoint_resume_and_signature_mismatch(self):
         with TemporaryDirectory() as directory:
             path = Path(directory) / "checkpoint.jsonl"
             header, records = pipeline.initialize_checkpoint(
-                path, "signature-one", "model", restart=False
+                path, "signature-one", "model", "none", restart=False
             )
             self.assertEqual(records, {})
             result = pipeline.ScreeningResult(
@@ -314,8 +342,27 @@ class SerializationTests(unittest.TestCase):
             self.assertEqual(json.loads(first), payload)
 
     def test_main_requires_environment(self):
-        with patch.dict(os.environ, {}, clear=True):
+        with patch.dict(os.environ, {}, clear=True), patch.object(
+            pipeline, "load_dotenv"
+        ):
             self.assertEqual(pipeline.main([]), 2)
+
+    def test_main_loads_dotenv_without_overriding_process_environment(self):
+        with patch.dict(os.environ, {"OPENAI_API_KEY": "test-key"}, clear=True), patch.object(
+            pipeline, "load_dotenv"
+        ) as mocked_load, patch.object(pipeline, "execute") as mocked_execute:
+            self.assertEqual(pipeline.main([]), 0)
+
+        expected_directory = Path(pipeline.__file__).resolve().parent
+        mocked_load.assert_called_once_with(
+            dotenv_path=expected_directory / ".env", override=False
+        )
+        mocked_execute.assert_called_once_with(
+            expected_directory,
+            model=pipeline.MODEL,
+            reasoning_effort=pipeline.DEFAULT_REASONING_EFFORT,
+            restart=False,
+        )
 
 
 if __name__ == "__main__":

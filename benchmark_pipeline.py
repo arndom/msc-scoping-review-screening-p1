@@ -17,6 +17,7 @@ from typing import Any, Callable, Dict, List, Optional, Tuple
 import openai
 from openai import OpenAI
 import pandas as pd
+from dotenv import load_dotenv
 from pydantic import BaseModel, ConfigDict, Field, model_validator
 
 
@@ -28,6 +29,9 @@ OUTPUT_JSON_FILENAME = "benchmark_results.json"
 CHECKPOINT_FILENAME = ".benchmark_checkpoint.jsonl"
 
 EXPECTED_RECORDS = 291
+MODEL = "gpt-6-luna"
+DEFAULT_REASONING_EFFORT = "none"
+SUPPORTED_REASONING_EFFORTS = ("none", "low")
 SOURCE_COLUMNS = [
     "S/N",
     "Item Type",
@@ -46,7 +50,7 @@ TEMPERATURE = 0.0
 RECALL_TARGET = 0.95
 MAX_ATTEMPTS = 4  # One initial request plus three retries.
 BACKOFF_SECONDS = (1.0, 2.0, 4.0)
-PROMPT_VERSION = "title-abstract-screening-v1.0.0"
+PROMPT_VERSION = "title-abstract-screening-v1.1.0"
 RESULTS_SCHEMA_VERSION = "benchmark-results-v1.0.0"
 
 
@@ -119,15 +123,36 @@ Population-Concept-Context inclusion criteria:
 - Context: software engineering practices, developer activity patterns, software supply-chain impact, project health, and ecosystem sustainability or maintenance dynamics.
 - Study type: original empirical research in a peer-reviewed venue.
 
+Concept meaning:
+- Scope clarification: the concept includes not only abandonment states, but also explicitly connected causes, predictors, prevention or mitigation mechanisms, resilience factors, and consequences. Treat this clarification as part of the definition used by EXC-2 below.
+- Community structure or participation, maintainer support, funding or resources, contributor retention, and long-term support can be relevant when the study analyzes how they help OSS projects continue to be maintained or survive, or how their absence contributes to inactivity or discontinuation. A study can therefore be in scope even when it focuses on avoiding abandonment rather than observing an already-abandoned project.
+- Sustainability, project or community health, stability, long-term success, continued development, maintenance capacity, and similar terms can have meanings broader than abandonment. Do not automatically Include a study because one of these terms appears. If one is central to the study's objective, data, analysis, or findings but its relationship to OSS project/repository continuity is unclear, assign Unsure.
+- Plausible lifecycle-related factors include maintainer workload or support, funding, onboarding or retention, contributor and community dynamics, issue handling or productivity, software quality or decay, and security or update risks. When the study actually investigates one of these factors in an OSS setting but the abstract does not establish whether or how it affects project/repository persistence or continued maintenance, assign Unsure, not EXC-2. A passing background or motivation mention without related study aims, data, analysis, or findings is not enough by itself for Include or Unsure.
+- Outdated OSS, stale dependencies, delayed updates, or associated risks are not automatically evidence of abandonment. Include them only when the study clearly examines their connection to OSS projects or repositories becoming unsupported, unmaintained, inactive, or discontinued. When this connection is plausible but unclear, assign Unsure; do not require an explicit causal link for Unsure. Assign EXC-2 only when the study clearly concerns ordinary update or dependency practices with no plausible lifecycle connection.
+- Distinguish the level of the outcome. Survival, death, churn, or removal of code, components, tables, contributors, or subsystems does not by itself establish project- or repository-level abandonment. If the abstract studies such a lower-level outcome and leaves its relationship to project/repository continuity unclear, assign Unsure.
+- Abandonment may be described without using the word “abandonment.” It can include project- or repository-level states and processes such as dormancy, sustained inactivity, maintenance cessation, decay, decline, project death, or reduced likelihood of survival.
+- Contributor or maintainer activity, interactions, retention, resources, and effort are not automatically synonymous with abandonment. Treat them as potentially relevant factors, indicators, or consequences when the study’s aims, research questions, analysis, or findings explicitly connect them to OSS project or repository persistence, continued maintenance, inactivity, discontinuation, decline, or survival.
+- Assess the study’s purpose, research questions, data, analysis, and outcomes rather than matching isolated terms. Include a record when its research directly examines an abandonment-related state or an explicitly connected factor. If the connection is plausible but unclear from the abstract, assign Unsure. A passing mention in background or motivation alone does not establish relevance.
+- Assign EXC-2 only when the title and abstract make it clear that the study’s actual subject is outside these abandonment-related concepts. Do not use the absence of a specific keyword as evidence for exclusion.
+- Distinguish project-level inactivity or maintenance cessation from an individual contributor’s inactivity; one does not establish the other without an explicit connection.
+
+Study meaning:
+- A primary empirical replication or replication study remains a primary study, even when it reproduces or extends earlier findings using the same dataset. Reserve EXC-5 for literature syntheses such as systematic or scoping reviews, mapping studies, and meta-analyses.
+- An empirical analysis of conference talks, practitioner discussions, or other primary data is not a secondary study merely because the data are talks or publications. Reserve EXC-5 for a synthesis of existing studies; if the record does not establish whether it is primary or secondary, assign Unsure rather than inferring EXC-5.
+- Do not infer EXC-4 solely from “work-in-progress,” a conference venue, or a missing DOI. Distinguish an individual research paper from a proceedings volume, table of contents, program, or index; do not use a relevant paper listed inside a collection as evidence about the collection-level record.
+
 Apply the following exclusions strictly from top to bottom. Stop at and assign the FIRST criterion for which the supplied title, abstract, or secondary metadata provides explicit evidence; never replace an earlier matching code with a later, more specific code:
 - EXC-1: Non-OSS Context — the study population is explicitly outside OSS/FLOSS projects, repositories, or ecosystems. This includes proprietary or closed-source software and clearly non-software populations.
-- EXC-2: Out of Scope Concept — the study concerns general maintenance, evolution, or quality without explicitly addressing abandonment, dormancy, failure, decay, inactivity, decline, unmaintained states, or an equivalent concept.
+- EXC-2: Out of Scope Concept — assign only when the study's actual objective and evidence are clearly unrelated to OSS project/repository continuity and do not examine an abandonment-related state or a plausible lifecycle factor, indicator, prevention mechanism, or consequence. General maintenance, evolution, quality, or updating clearly unrelated to those concepts is out of scope. An unclear or unproven connection is not, by itself, evidence for EXC-2; use Unsure when the study's focus makes the connection plausible.
 - EXC-3: Non-SE Context — only after EXC-1 and EXC-2 do not apply, the study concerns a non-software-engineering domain such as open hardware, networking, open science, or open datasets.
 - EXC-4: Grey / Non Peer Reviewed — the item is explicitly non-peer-reviewed or short-form material such as a preprint, keynote, editorial, or slides.
 - EXC-5: Secondary Study — the item is secondary or tertiary literature such as a systematic literature review or mapping study rather than a primary study.
 
 High-recall rules:
 - If the abstract is ambiguous, incomplete, absent, or lacks explicit evidence for exclusion, assign decision Unsure rather than Exclude.
+- Use this three-way threshold: Include when the study clearly examines a project/repository lifecycle outcome or clearly analyzes a factor's relationship to that outcome; Unsure when the study examines a plausible lifecycle-adjacent concept or factor but the title/abstract leaves the relationship or level of analysis unresolved; EXC-2 only when the study is clearly unrelated. Do not use "the abstract does not explicitly link X to abandonment" as the rationale for EXC-2 when X is a central, plausibly related subject of the study.
+- Do not require explicit causal evidence to assign Unsure. The absence of that evidence is a reason for Unsure when a plausible relationship is present, not a reason to exclude.
+- A broad sustainability, success, health, stability, or long-term-support reference is not sufficient for Include on its own. Check whether the study investigates the concept; if it does but its project-continuity meaning is unclear, assign Unsure.
 - Absence of an OSS/open-source keyword alone is not proof that the population is outside OSS; without affirmative evidence, use Unsure rather than EXC-1.
 - Explicit evidence that the population is outside OSS must be classified as EXC-1, even when a later criterion such as EXC-3 could also describe the record.
 - Do not infer non-peer-reviewed status solely from an unfamiliar venue or missing DOI.
@@ -287,20 +312,30 @@ def classify_record(
     client: Any,
     model: str,
     record: pd.Series,
+    reasoning_effort: str = DEFAULT_REASONING_EFFORT,
     sleep: Callable[[float], None] = time.sleep,
 ) -> Dict[str, Any]:
     """Classify one record, retrying only transient API failures."""
+    if reasoning_effort not in SUPPORTED_REASONING_EFFORTS:
+        raise PipelineError(
+            "Unsupported reasoning effort: "
+            f"{reasoning_effort}. Choose one of: "
+            + ", ".join(SUPPORTED_REASONING_EFFORTS)
+        )
     started = time.perf_counter()
     for attempt in range(1, MAX_ATTEMPTS + 1):
         try:
-            response = client.responses.parse(
-                model=model,
-                instructions=SYSTEM_PROMPT,
-                input=[{"role": "user", "content": build_record_message(record)}],
-                text_format=ScreeningResult,
-                temperature=TEMPERATURE,
-                store=False,
-            )
+            request: Dict[str, Any] = {
+                "model": model,
+                "instructions": SYSTEM_PROMPT,
+                "input": [{"role": "user", "content": build_record_message(record)}],
+                "text_format": ScreeningResult,
+                "reasoning": {"effort": reasoning_effort},
+                "store": False,
+            }
+            if reasoning_effort == "none":
+                request["temperature"] = TEMPERATURE
+            response = client.responses.parse(**request)
             parsed = getattr(response, "output_parsed", None)
             if parsed is None:
                 refusal = refusal_text(response)
@@ -324,12 +359,15 @@ def classify_record(
     raise AssertionError("Retry loop exited unexpectedly.")
 
 
-def run_signature(sample_hash: str, protocol_hash: str, model: str) -> str:
+def run_signature(
+    sample_hash: str, protocol_hash: str, model: str, reasoning_effort: str
+) -> str:
     signature_data = {
         "sample_sha256": sample_hash,
         "protocol_sha256": protocol_hash,
         "model": model,
-        "temperature": TEMPERATURE,
+        "reasoning_effort": reasoning_effort,
+        "temperature": TEMPERATURE if reasoning_effort == "none" else None,
         "prompt_version": PROMPT_VERSION,
         "prompt_sha256": sha256_text(SYSTEM_PROMPT),
         "schema": ScreeningResult.model_json_schema(),
@@ -341,7 +379,11 @@ def run_signature(sample_hash: str, protocol_hash: str, model: str) -> str:
 
 
 def initialize_checkpoint(
-    path: Path, signature: str, model: str, restart: bool
+    path: Path,
+    signature: str,
+    model: str,
+    reasoning_effort: str,
+    restart: bool,
 ) -> Tuple[Dict[str, Any], Dict[int, Dict[str, Any]]]:
     if path.exists() and not restart:
         return load_checkpoint(path, signature)
@@ -351,6 +393,8 @@ def initialize_checkpoint(
         "signature": signature,
         "created_at_utc": utc_now(),
         "model_requested": model,
+        "reasoning_effort": reasoning_effort,
+        "temperature": TEMPERATURE if reasoning_effort == "none" else None,
         "prompt_version": PROMPT_VERSION,
     }
     with path.open("w", encoding="utf-8", newline="\n") as handle:
@@ -508,6 +552,7 @@ def atomic_write_json(data: Dict[str, Any], path: Path) -> None:
 def build_report(
     base_directory: Path,
     model: str,
+    reasoning_effort: str,
     signature: str,
     header: Dict[str, Any],
     checkpoint_records: Dict[int, Dict[str, Any]],
@@ -544,7 +589,8 @@ def build_report(
             },
             "model_requested": model,
             "models_returned": returned_models,
-            "temperature": TEMPERATURE,
+            "reasoning_effort": reasoning_effort,
+            "temperature": TEMPERATURE if reasoning_effort == "none" else None,
             "store": False,
             "records": len(checkpoint_records),
             "resumed_records": resumed_records,
@@ -577,10 +623,30 @@ def parse_args(argv: Optional[List[str]] = None) -> argparse.Namespace:
         action="store_true",
         help="Discard a prior checkpoint and classify all records again.",
     )
+    parser.add_argument(
+        "--reasoning-effort",
+        choices=SUPPORTED_REASONING_EFFORTS,
+        default=DEFAULT_REASONING_EFFORT,
+        help=(
+            "GPT-6 Luna reasoning effort (default: none). Temperature 0.0 is sent "
+            "with none and omitted with low."
+        ),
+    )
     return parser.parse_args(argv)
 
 
-def execute(base_directory: Path, model: str, restart: bool = False) -> None:
+def execute(
+    base_directory: Path,
+    model: str = MODEL,
+    reasoning_effort: str = DEFAULT_REASONING_EFFORT,
+    restart: bool = False,
+) -> None:
+    if reasoning_effort not in SUPPORTED_REASONING_EFFORTS:
+        raise PipelineError(
+            "Unsupported reasoning effort: "
+            f"{reasoning_effort}. Choose one of: "
+            + ", ".join(SUPPORTED_REASONING_EFFORTS)
+        )
     invocation_started = time.perf_counter()
     sample_path = base_directory / SAMPLE_FILENAME
     ground_truth_path = base_directory / GROUND_TRUTH_FILENAME
@@ -595,10 +661,13 @@ def execute(base_directory: Path, model: str, restart: bool = False) -> None:
     validate_ground_truth(sample, ground_truth)
 
     signature = run_signature(
-        sha256_file(sample_path), sha256_file(protocol_path), model
+        sha256_file(sample_path),
+        sha256_file(protocol_path),
+        model,
+        reasoning_effort,
     )
     header, checkpoint_records = initialize_checkpoint(
-        checkpoint_path, signature, model, restart
+        checkpoint_path, signature, model, reasoning_effort, restart
     )
     resumed_records = len(checkpoint_records)
     client = OpenAI()
@@ -608,7 +677,9 @@ def execute(base_directory: Path, model: str, restart: bool = False) -> None:
         if serial in checkpoint_records:
             continue
         print(f"Screening S/N {serial}/{EXPECTED_RECORDS}...", flush=True)
-        api_result = classify_record(client, model, record)
+        api_result = classify_record(
+            client, model, record, reasoning_effort=reasoning_effort
+        )
         entry = {"kind": "record", "S/N": serial, **api_result}
         append_checkpoint(checkpoint_path, entry)
         checkpoint_records[serial] = entry
@@ -617,12 +688,13 @@ def execute(base_directory: Path, model: str, restart: bool = False) -> None:
     screened = sample.loc[:, SOURCE_COLUMNS].merge(
         predictions, on="S/N", how="left", validate="one_to_one"
     )
-    if screened[LLM_COLUMNS].isna().any().any():
+    if screened["llm_decision"].isna().any().any():
         raise PipelineError("Generated screening CSV contains missing LLM results.")
     metrics = compute_metrics(ground_truth, predictions)
     report = build_report(
         base_directory,
         model,
+        reasoning_effort,
         signature,
         header,
         checkpoint_records,
@@ -643,8 +715,10 @@ def execute(base_directory: Path, model: str, restart: bool = False) -> None:
 
 def main(argv: Optional[List[str]] = None) -> int:
     args = parse_args(argv)
+    base_directory = Path(__file__).resolve().parent
+    load_dotenv(dotenv_path=base_directory / ".env", override=False)
     missing_environment = [
-        name for name in ("OPENAI_API_KEY", "OPENAI_MODEL") if not os.environ.get(name)
+        name for name in ("OPENAI_API_KEY",) if not os.environ.get(name)
     ]
     if missing_environment:
         print(
@@ -656,8 +730,9 @@ def main(argv: Optional[List[str]] = None) -> int:
 
     try:
         execute(
-            Path(__file__).resolve().parent,
-            os.environ["OPENAI_MODEL"].strip(),
+            base_directory,
+            model=MODEL,
+            reasoning_effort=args.reasoning_effort,
             restart=args.restart,
         )
     except (PipelineError, OSError, ValueError, openai.OpenAIError) as error:
