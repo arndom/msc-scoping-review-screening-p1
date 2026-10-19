@@ -2,14 +2,14 @@
   "metrics": {
     "binary_accuracy": {
       "denominator": 291,
-      "numerator": 279,
-      "value": 0.958763
+      "numerator": 281,
+      "value": 0.965636
     },
     "candidate_confusion_matrix": {
-      "fn": 2,
-      "fp": 10,
-      "tn": 246,
-      "tp": 33
+      "fn": 1,
+      "fp": 9,
+      "tn": 247,
+      "tp": 34
     },
     "candidate_positive_definition": [
       "Include",
@@ -17,21 +17,19 @@
     ],
     "exclusion_code_accuracy_on_human_excludes": {
       "denominator": 256,
-      "numerator": 104,
-      "value": 0.40625
+      "numerator": 102,
+      "value": 0.398438
     },
     "false_negative_rate": {
       "denominator": 35,
-      "numerator": 2,
-      "value": 0.057143
+      "numerator": 1,
+      "value": 0.028571
     },
     "false_negative_record_ids": [
-      31,
-      156
+      31
     ],
     "false_positive_record_ids": [
       3,
-      115,
       183,
       198,
       199,
@@ -48,25 +46,25 @@
     },
     "llm_class_counts": {
       "Exclude": 248,
-      "Include": 15,
-      "Unsure": 28
+      "Include": 18,
+      "Unsure": 25
     },
     "precision": {
       "denominator": 43,
-      "numerator": 33,
-      "value": 0.767442
+      "numerator": 34,
+      "value": 0.790698
     },
     "recall_sensitivity": {
       "denominator": 35,
-      "numerator": 33,
-      "value": 0.942857
+      "numerator": 34,
+      "value": 0.971429
     },
     "recall_target": 0.95,
-    "recall_target_met": false,
+    "recall_target_met": true,
     "specificity": {
       "denominator": 256,
-      "numerator": 246,
-      "value": 0.960938
+      "numerator": 247,
+      "value": 0.964844
     },
     "three_class_decision_accuracy": {
       "denominator": 291,
@@ -75,8 +73,8 @@
     }
   },
   "run": {
-    "completed_at_utc": "2026-10-17T20:59:35.063588Z",
-    "current_invocation_seconds": 621.51781,
+    "completed_at_utc": "2026-10-19T18:24:01.212314Z",
+    "current_invocation_seconds": 724.581329,
     "dependencies": {
       "openai": "2.48.0",
       "pandas": "2.3.3",
@@ -102,15 +100,15 @@
     "records": 291,
     "resumed_records": 0,
     "signature": "8d24ebc85bb57c02221f2a7532414dd2f7151359603b63ea0f6992ca5fbae0b3",
-    "started_at_utc": "2026-10-17T20:49:13.581396Z",
+    "started_at_utc": "2026-10-19T18:11:56.665882Z",
     "store": false,
     "temperature": 0.0,
     "token_usage": {
       "input_tokens": 902351,
-      "output_tokens": 18263,
-      "total_tokens": 920614
+      "output_tokens": 18202,
+      "total_tokens": 920553
     },
-    "total_api_latency_seconds": 619.576245
+    "total_api_latency_seconds": 722.542362
   },
   "schema_version": "benchmark-results-v1.0.0"
 }
