@@ -128,6 +128,26 @@ The completed run writes:
 - `llm_screened_291.csv`: source fields plus the three LLM result columns.
 - `benchmark_results.json`: prompt and input hashes, model and reasoning configuration, dependencies, timing, token usage, class counts, metrics, and error record IDs.
 
+## Full-corpus screening
+
+`screen_full_corpus.py` applies the exact same prompt, Pydantic schema, model settings, and one-record-per-request classifier used by `benchmark_pipeline.py` to all 2,913 records in `raw_records_2913.csv`. It generates sequential `S/N` identifiers, preserves every original raw CSV column in the output, and adds `llm_decision`, `llm_exclusion_code`, and `llm_notes`. Only the benchmark's screening fields (`S/N`, `Item Type`, `Title`, `Abstract Note`, `DOI`, `Url`, and `Language`) are sent to the model; other bibliographic fields are retained in the CSV but not sent.
+
+Run the full screening with the default `none` reasoning effort:
+
+```powershell
+python screen_full_corpus.py
+```
+
+Or select `low` reasoning effort:
+
+```powershell
+python screen_full_corpus.py --reasoning-effort low
+```
+
+The script writes `llm_screened_2913.csv` and `llm_screening_report_2913.json`. The JSON report includes the exact prompt and version/hash, input and protocol hashes, requested/returned model identifiers, run settings, token usage, timing, decision counts and percentages (Exclude, Include, Unsure, and Include-or-Unsure combined), and counts for each exclusion code (including records with no exclusion code). Percentages use all screened records as the denominator. There is no human-label metric calculation for this full-corpus run because no human-screened ground truth is supplied for all 2,913 records.
+
+Successful record results are checkpointed in `.full_corpus_checkpoint.jsonl` and reused when rerunning with the same input, prompt, model, and reasoning configuration. Use `--restart` to deliberately discard that checkpoint and classify every record again. Changing the reasoning effort requires a separate checkpoint signature; preserve prior outputs before rerunning if you want to retain both configurations.
+
 `Include` and `Unsure` form the positive Candidate Set. The report calculates:
 
 - Candidate-set recall/sensitivity, with a target of at least 0.95.
