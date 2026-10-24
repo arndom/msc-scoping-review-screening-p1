@@ -1,8 +1,8 @@
 {
   "decision_counts": {
     "Exclude": 2481,
-    "Include": 152,
-    "Unsure": 280
+    "Include": 151,
+    "Unsure": 281
   },
   "decision_percentages": {
     "Exclude": {
@@ -11,9 +11,9 @@
       "percentage": 85.17
     },
     "Include": {
-      "count": 152,
+      "count": 151,
       "denominator": 2913,
-      "percentage": 5.22
+      "percentage": 5.18
     },
     "Include_or_Unsure": {
       "count": 432,
@@ -21,22 +21,22 @@
       "percentage": 14.83
     },
     "Unsure": {
-      "count": 280,
+      "count": 281,
       "denominator": 2913,
-      "percentage": 9.61
+      "percentage": 9.65
     }
   },
   "exclusion_code_counts": {
-    "EXC-1: Non-OSS Context": 601,
-    "EXC-2: Out of Scope Concept": 1717,
-    "EXC-3: Non-SE Context": 18,
-    "EXC-4: Grey / Non Peer Reviewed": 119,
+    "EXC-1: Non-OSS Context": 562,
+    "EXC-2: Out of Scope Concept": 1750,
+    "EXC-3: Non-SE Context": 21,
+    "EXC-4: Grey / Non Peer Reviewed": 122,
     "EXC-5: Secondary Study": 26,
     "No exclusion code": 432
   },
   "run": {
-    "completed_at_utc": "2026-10-20T21:28:45.515391Z",
-    "current_invocation_seconds": 0.327615,
+    "completed_at_utc": "2026-10-24T11:12:21.507906Z",
+    "current_invocation_seconds": 0.174676,
     "dependencies": {
       "openai": "2.48.0",
       "pandas": "2.3.3",
@@ -58,15 +58,15 @@
     "records": 2913,
     "resumed_records": 2913,
     "signature": "fe9dd7fc8a85fa304bcdc61d4b1d7e161e403663e10704497f96e15352105412",
-    "started_at_utc": "2026-10-20T19:31:21.543705Z",
+    "started_at_utc": "2026-10-24T09:10:44.163423Z",
     "store": false,
     "temperature": 0.0,
     "token_usage": {
       "input_tokens": 9036425,
-      "output_tokens": 182647,
-      "total_tokens": 9219072
+      "output_tokens": 182982,
+      "total_tokens": 9219407
     },
-    "total_api_latency_seconds": 6569.840515
+    "total_api_latency_seconds": 5585.582723
   },
   "schema_version": "full-screening-report-v1.0.0",
   "total_candidates_include_or_unsure": 432,

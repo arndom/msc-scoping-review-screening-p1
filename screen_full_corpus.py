@@ -27,6 +27,19 @@ OUTPUT_JSON_FILENAME = "llm_screening_report_2913.json"
 CHECKPOINT_FILENAME = ".full_corpus_checkpoint.jsonl"
 EXPECTED_RECORDS = 2913
 REPORT_SCHEMA_VERSION = "full-screening-report-v1.0.0"
+OUTPUT_COLUMNS = [
+    "S/N",
+    "Item Type",
+    "Publication Year",
+    "Author",
+    "Title",
+    "DOI",
+    "Url",
+    "Abstract Note",
+    "Decision",
+    "Exclusion Code",
+    "Notes",
+]
 
 
 def utc_now() -> str:
@@ -101,8 +114,8 @@ def load_or_create_checkpoint(
 
 
 def count_results(results: pd.DataFrame) -> Tuple[Dict[str, int], Dict[str, int]]:
-    decisions = results["llm_decision"].value_counts().to_dict()
-    code_column = results["llm_exclusion_code"].fillna("")
+    decisions = results["Decision"].value_counts().to_dict()
+    code_column = results["Exclusion Code"].fillna("")
     codes = code_column.value_counts().to_dict()
     decision_counts = {label: int(decisions.get(label, 0)) for label in ("Include", "Unsure", "Exclude")}
     code_counts = {
@@ -129,6 +142,26 @@ def decision_percentages(decisions: Dict[str, int], total: int) -> Dict[str, Any
         }
         for label, count in categories.items()
     }
+
+
+def build_output(raw: pd.DataFrame, predictions: pd.DataFrame) -> pd.DataFrame:
+    source_columns = OUTPUT_COLUMNS[:8]
+    # The raw export also has a `Notes` field. Exclude it deliberately so the
+    # output's `Notes` column is unambiguously the LLM screening rationale.
+    source_data = raw.loc[:, source_columns]
+    combined = source_data.merge(predictions, on="S/N", how="left", validate="one_to_one")
+    if len(combined) != EXPECTED_RECORDS:
+        raise benchmark.PipelineError("Generated output does not contain all raw records.")
+    if combined[["llm_decision", "llm_notes"]].isna().any().any():
+        raise benchmark.PipelineError("Generated output contains missing LLM decisions or notes.")
+    combined = combined.rename(
+        columns={
+            "llm_decision": "Decision",
+            "llm_exclusion_code": "Exclusion Code",
+            "llm_notes": "Notes",
+        }
+    )
+    return combined.loc[:, OUTPUT_COLUMNS]
 
 
 def write_json(path: Path, report: Dict[str, Any]) -> None:
@@ -181,9 +214,7 @@ def execute(
         completed[serial] = entry
 
     predictions = benchmark.predictions_from_checkpoint(screened_input, completed)
-    output = raw.merge(predictions, on="S/N", how="left", validate="one_to_one")
-    if len(output) != EXPECTED_RECORDS or output[["llm_decision", "llm_notes"]].isna().any().any():
-        raise benchmark.PipelineError("Full-corpus output is incomplete or contains missing predictions.")
+    output = build_output(raw, predictions)
     decisions, codes = count_results(output)
     report = {
         "schema_version": REPORT_SCHEMA_VERSION,

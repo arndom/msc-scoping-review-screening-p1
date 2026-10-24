@@ -130,7 +130,7 @@ The completed run writes:
 
 ## Full-corpus screening
 
-`screen_full_corpus.py` applies the exact same prompt, Pydantic schema, model settings, and one-record-per-request classifier used by `benchmark_pipeline.py` to all 2,913 records in `raw_records_2913.csv`. It generates sequential `S/N` identifiers, preserves every original raw CSV column in the output, and adds `llm_decision`, `llm_exclusion_code`, and `llm_notes`. Only the benchmark's screening fields (`S/N`, `Item Type`, `Title`, `Abstract Note`, `DOI`, `Url`, and `Language`) are sent to the model; other bibliographic fields are retained in the CSV but not sent.
+`screen_full_corpus.py` applies the exact same prompt, Pydantic schema, model settings, and one-record-per-request classifier used by `benchmark_pipeline.py` to all 2,913 records in `raw_records_2913.csv`. It generates sequential `S/N` identifiers. The output CSV contains only these columns, in order: `S/N`, `Item Type`, `Publication Year`, `Author`, `Title`, `DOI`, `Url`, `Abstract Note`, `Decision`, `Exclusion Code`, and `Notes`. Only the benchmark's screening fields (`S/N`, `Item Type`, `Title`, `Abstract Note`, `DOI`, `Url`, and `Language`) are sent to the model; the other output metadata fields are retained for your screening sheet but not sent.
 
 Run the full screening with the default `none` reasoning effort:
 

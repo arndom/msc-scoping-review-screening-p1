@@ -31,8 +31,8 @@ class FullCorpusTests(unittest.TestCase):
     def test_count_results_includes_all_decisions_and_empty_codes(self):
         data = pd.DataFrame(
             {
-                "llm_decision": ["Include", "Unsure", "Exclude", "Exclude"],
-                "llm_exclusion_code": [
+                "Decision": ["Include", "Unsure", "Exclude", "Exclude"],
+                "Exclusion Code": [
                     "",
                     "",
                     benchmark.ExclusionCode.NON_OSS.value,
@@ -54,6 +54,36 @@ class FullCorpusTests(unittest.TestCase):
         self.assertEqual(percentages["Include"]["percentage"], 33.33)
         self.assertEqual(percentages["Unsure"]["percentage"], 16.67)
         self.assertEqual(percentages["Include_or_Unsure"]["percentage"], 50.0)
+
+    def test_output_uses_phase_sheet_column_order_and_names(self):
+        raw = pd.DataFrame(
+            {
+                "S/N": range(1, full.EXPECTED_RECORDS + 1),
+                "Item Type": ["journalArticle"] * full.EXPECTED_RECORDS,
+                "Publication Year": [2024] * full.EXPECTED_RECORDS,
+                "Author": ["Author"] * full.EXPECTED_RECORDS,
+                "Title": ["Title"] * full.EXPECTED_RECORDS,
+                "DOI": [""] * full.EXPECTED_RECORDS,
+                "Url": [""] * full.EXPECTED_RECORDS,
+                "Abstract Note": [""] * full.EXPECTED_RECORDS,
+                "Notes": ["Raw bibliographic note"] * full.EXPECTED_RECORDS,
+                "Extra field": ["not included"] * full.EXPECTED_RECORDS,
+            }
+        )
+        predictions = pd.DataFrame(
+            {
+                "S/N": range(1, full.EXPECTED_RECORDS + 1),
+                "llm_decision": ["Include"] * full.EXPECTED_RECORDS,
+                "llm_exclusion_code": [None] * full.EXPECTED_RECORDS,
+                "llm_notes": ["LLM rationale"] * full.EXPECTED_RECORDS,
+            }
+        )
+        output = full.build_output(raw, predictions)
+        self.assertEqual(output.columns.tolist(), full.OUTPUT_COLUMNS)
+        self.assertNotIn("Extra field", output.columns)
+        self.assertEqual(output.columns.tolist().count("Notes"), 1)
+        self.assertEqual(output.loc[0, "Notes"], "LLM rationale")
+        self.assertEqual(output.loc[0, "Decision"], "Include")
 
 
 if __name__ == "__main__":
